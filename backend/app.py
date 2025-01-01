@@ -2,6 +2,13 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Fungsi untuk mendapatkan saran pernikahan
+def get_marriage_advice(status_perkawinan, usia):
+    if status_perkawinan == 'Belum Menikah' and usia > 20:
+        return "Segera menikah lah."
+    else:
+        return ""
+
 @app.route('/smoker', methods=['POST'])
 def classify_smoker():
     try:
@@ -30,9 +37,8 @@ def classify_smoker():
         amt_akhir_pekan = data['amt_akhir_pekan']
         amt_hari_kerja = data['amt_hari_kerja']
 
-        # Cek status pernikahan dan usia
-        mariage = 'Pernikahan' if status_perkawinan == 'Menikah' else 'Belum pernah menikah'
-        marriage_advice = f"Status pernikahan: {mariage}"
+        # Panggil fungsi untuk mendapatkan saran pernikahan
+        marriage_advice = get_marriage_advice(status_perkawinan, usia)
 
         # Cek kualifikasi tertinggi
         if kualifikasi_tertinggi == 'SMA':
@@ -45,6 +51,7 @@ def classify_smoker():
             marriage_advice += "\nKualifikasi tertinggi: S3"
         else:
             marriage_advice += "\nKualifikasi tertinggi: Tidak diketahui"
+        
         # Klasifikasi perokok
         jenis, total_merokok, cost, health_damage = classify_smoker_type(amt_akhir_pekan, amt_hari_kerja)
 
