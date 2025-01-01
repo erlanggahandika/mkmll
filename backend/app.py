@@ -30,6 +30,21 @@ def classify_smoker():
         amt_akhir_pekan = data['amt_akhir_pekan']
         amt_hari_kerja = data['amt_hari_kerja']
 
+        # Cek status pernikahan dan usia
+        mariage = 'Pernikahan' if status_perkawinan == 'Menikah' else 'Belum pernah menikah'
+        marriage_advice = f"Status pernikahan: {mariage}"
+
+        # Cek kualifikasi tertinggi
+        if kualifikasi_tertinggi == 'SMA':
+            marriage_advice += "\nKualifikasi tertinggi: SMA"
+        elif kualifikasi_tertinggi == 'S1':
+            marriage_advice += "\nKualifikasi tertinggi: S1"
+        elif kualifikasi_tertinggi == 'S2':
+            marriage_advice += "\nKualifikasi tertinggi: S2"
+        elif kualifikasi_tertinggi == 'S3':
+            marriage_advice += "\nKualifikasi tertinggi: S3"
+        else:
+            marriage_advice += "\nKualifikasi tertinggi: Tidak diketahui"
         # Klasifikasi perokok
         jenis, total_merokok, cost, health_damage = classify_smoker_type(amt_akhir_pekan, amt_hari_kerja)
 
@@ -37,9 +52,10 @@ def classify_smoker():
         user_message = (
             f"Anda terklasifikasi sebagai {jenis}.\n"
             f"Total rokok yang dikonsumsi dalam setahun: {total_merokok} batang.\n"
-            f"Biaya yang dikeluarkan untuk merokok per tahun: ${cost:.2f}.\n"
-            f"Kerugian kesehatan yang ditimbulkan per tahun: ${health_damage:.2f}.\n"
+            f"Biaya yang dikeluarkan untuk merokok per tahun: IDR {cost:,}.\n"
+            f"Kerugian kesehatan yang ditimbulkan per tahun: IDR {health_damage:,}.\n"
             "Merokok dapat menyebabkan berbagai masalah kesehatan, termasuk penyakit jantung, kanker, dan gangguan pernapasan."
+            f"\n{marriage_advice}"
         )
 
         # Mengembalikan hasil klasifikasi tanpa menyimpan ke database
@@ -59,7 +75,8 @@ def classify_smoker():
             'total_merokok': total_merokok,
             'cost_per_year': cost,
             'health_damage': health_damage,
-            'message': user_message
+            'message': user_message,
+            'marriage_advice': marriage_advice
         }
 
         return jsonify(response), 200
@@ -82,13 +99,13 @@ def classify_smoker_type(amt_akhir_pekan, amt_hari_kerja):
     # Estimasi total merokok per tahun
     total_merokok = cigarettes_per_day * 365
 
-    # Estimasi biaya merokok per tahun (misal harga per bungkus rokok)
-    cost_per_cigarette = 0.2  # Biaya per rokok dalam USD
-    cost = total_merokok * cost_per_cigarette  # Biaya per tahun
+    # Estimasi biaya merokok per tahun (harga per rokok dalam IDR)
+    cost_per_cigarette = 20000   # Biaya per rokok dalam IDR
+    cost = total_merokok * cost_per_cigarette  # Biaya per tahun dalam IDR
 
-    # Estimasi kerugian kesehatan per tahun (misal biaya pengobatan)
-    health_damage_per_cigarette = 0.1  # Estimasi kerugian kesehatan per rokok dalam USD
-    health_damage = total_merokok * health_damage_per_cigarette  # Kerugian kesehatan per tahun
+    # Estimasi kerugian kesehatan per tahun (biaya pengobatan dalam IDR)
+    health_damage_per_cigarette = 5000  # Estimasi kerugian kesehatan per rokok dalam IDR
+    health_damage = total_merokok * health_damage_per_cigarette  # Kerugian kesehatan per tahun dalam IDR
 
     return jenis, total_merokok, cost, health_damage
 
