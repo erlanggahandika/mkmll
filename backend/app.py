@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import the CORS class
 
 app = Flask(__name__)
+
+# Konfigurasi CORS
+CORS(app)
 
 # Fungsi untuk mendapatkan saran pernikahan
 def get_marriage_advice(status_perkawinan, usia):
